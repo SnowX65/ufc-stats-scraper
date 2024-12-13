@@ -1,6 +1,7 @@
 import requests
 import os
 import logging
+import json
 import fake_useragent
 from scripts import ENV, UFCSTATS_FIGHTERS_URL
 
@@ -39,7 +40,7 @@ def retrive_web_page(url, fileName):
 
     if fileName:
         if os.path.exists(fileName):
-            logger.info('Retriving fighters from local file - %s', fileName)
+            logger.info('Retriving data from local file - %s', fileName)
             with open(fileName, 'r') as f:
                 return f.read()
 
@@ -53,15 +54,29 @@ def retrive_web_page(url, fileName):
 
     if fileName:
         # retrive the response and save it into a file
-        with open ("fileName", "wb") as text_file:
-            text_file.write(response)
+        write_to_file(response, fileName)
 
     return response
 
-def content_exists(element, content):
+def write_to_file(data, fileName): 
+
+    mode = 'w'
+
+    if isinstance(data, bytes):
+        mode = 'wb'
+
+    with open (fileName, mode) as file:
+        file.write(data)  
+    # retrive the response and save it into a file
+    
+
+
+def content_exists(element, content, raiseValueError=True):
 
     if content is None:
         logger.warning('Element [%s] not found in web page', element)
-        raise ValueError('Element [%s] not found in web page' % element)
+
+        if raiseValueError:
+            raise ValueError('Element [%s] not found in web page' % element)
     
     return content
